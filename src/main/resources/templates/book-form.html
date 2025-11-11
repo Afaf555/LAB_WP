@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Form</title>
+</head>
+<body>
+
+<h2 th:text="${book == null} ? 'Add new book' : 'Edit book'"></h2>
+
+<!-- ADD FORM -->
+<form th:action="@{/books/add}" method="post" th:if="${book == null}">
+  <label>Title:</label>
+  <input type="text" name="title" ><br/>
+
+  <label>Genre:</label>
+  <input type="text" name="genre" ><br/>
+
+  <label>Average Rating:</label>
+  <input type="number" name="averageRating" step="0.1" min="0" max="10" ><br/>
+
+  <label>Author:</label>
+  <select name="authorId" >
+    <option value="" disabled selected>-- choose author --</option>
+    <option th:each="a : ${authors}"
+            th:value="${a.id}"
+            th:text="${a.name + ' ' + a.surname}">
+    </option>
+  </select>
+
+  <br/><br/>
+  <button type="submit">Save</button>
+</form>
+
+<!-- EDIT FORM -->
+<form th:action="@{/books/edit/{bookId}(bookId=${book.id})}" method="post" th:if="${book != null}">
+  <label>Title:</label>
+  <input type="text" name="title" th:value="${book.title}" ><br/>
+
+  <label>Genre:</label>
+  <input type="text" name="genre" th:value="${book.genre}" ><br/>
+
+  <label>Average Rating:</label>
+  <input type="number" name="averageRating" th:value="${book.averageRating}"
+         step="0.1" min="0" max="10" ><br/>
+
+  <label>Author:</label>
+  <select name="authorId" required>
+    <option th:each="a : ${authors}"
+            th:value="${a.id}"
+            th:selected="${book.author != null and a.id == book.author.id}"
+            th:text="${a.name + ' ' + a.surname}">
+    </option>
+  </select>
+
+  <br/><br/>
+  <button type="submit">Update</button>
+</form>
+
+<br/>
+<a href="/books">Back to list</a>
+
+</body>
+</html>
