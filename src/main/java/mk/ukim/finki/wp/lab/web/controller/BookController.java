@@ -56,9 +56,15 @@ public class BookController {
                            @RequestParam Double averageRating,
                            @RequestParam Long authorId) {
 
-        bookService.saveBook(title, genre, averageRating, authorId);
+        Author author = authorService.findById(authorId);
+        if (author == null) {
+            return "redirect:/books?error=AuthorNotFound";
+        }
+
+        bookService.saveBook(title, genre, averageRating, author.getId());
         return "redirect:/books";
     }
+
 
     @PostMapping("/edit/{bookId}")
     public String editBook(@PathVariable Long bookId,
@@ -66,11 +72,13 @@ public class BookController {
                            @RequestParam String genre,
                            @RequestParam Double averageRating,
                            @RequestParam Long authorId) {
-        Author author=authorService.findAll().stream().filter(a->a.getId().equals(authorId)).findFirst().orElse(null);
 
-        bookService.editBook(bookId, title, genre, averageRating, authorId);
-//        if(author==null)
-//        bookService.saveBook(bookId, title, genre, averageRating, authorId)
+        Author author = authorService.findById(authorId);
+        if (author == null) {
+            return "redirect:/books?error=AuthorNotFound";
+        }
+
+        bookService.editBook(bookId, title, genre, averageRating, author.getId());
         return "redirect:/books";
     }
 

@@ -15,9 +15,9 @@ public class DataHolder {
     public static List<Author> authors = new ArrayList<>();
     @PostConstruct
     public void init(){
-        authors.add(new Author((long)(Math.random()*1000), "George", "Orwell", "UK", "Author of 1984 and Animal Farm"));
-        authors.add(new Author((long)(Math.random()*1000), "J.K.", "Rowling", "UK", "Author of the Harry Potter series"));
-        authors.add(new Author((long)(Math.random()*1000), "Jane", "Austen", "UK", "Author of Pride and Prejudice"));
+        authors.add(new Author(1L, "George", "Orwell", "UK", "Author of 1984 and Animal Farm"));
+        authors.add(new Author(2L, "J.K.", "Rowling", "UK", "Author of the Harry Potter series"));
+        authors.add(new Author(3L, "Jane", "Austen", "UK", "Author of Pride and Prejudice"));
         for (int i = 0; i < 10; i++){
             Author author = authors.get(i % authors.size());
             books.add(new Book("Pride and Prejudice "+i,"Drama",5.5,author));

@@ -1,15 +1,16 @@
 package mk.ukim.finki.wp.lab.repository;
+
 import mk.ukim.finki.wp.lab.bootstrap.DataHolder;
 import mk.ukim.finki.wp.lab.model.Author;
 import mk.ukim.finki.wp.lab.model.Book;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryBookRepository implements BookRepository {
+
     @Override
     public List<Book> findAll() {
         return DataHolder.books;
@@ -33,10 +34,8 @@ public class InMemoryBookRepository implements BookRepository {
                 .findFirst()
                 .orElse(null);
 
-        // backup проверка - ако не најде author со тоа id
-        if (author == null && !DataHolder.authors.isEmpty()) {
-            // земи го првиот author (или направи логика според име ако сакаш)
-            author = DataHolder.authors.get(0);
+        if (author == null) {
+            throw new IllegalArgumentException("Author not found for id " + authorId);
         }
 
         Book book = new Book(title, genre, averageRating, author);
@@ -45,31 +44,26 @@ public class InMemoryBookRepository implements BookRepository {
         return book;
     }
 
-
-
     @Override
     public Book editBook(Long bookId, String title, String genre, Double averageRating, Long authorId) {
         Book book = findById(bookId);
-        if (book == null) {
-            return null;
-        }
+        if (book == null) return null;
 
         Author author = DataHolder.authors.stream()
-                .filter(a -> a.getId().equals(authorId)
-                        || (book.getAuthor() != null && a.getName().equals(book.getAuthor().getName())
-                        && a.getSurname().equals(book.getAuthor().getSurname())))
+                .filter(a -> a.getId().equals(authorId))
                 .findFirst()
                 .orElse(null);
+
+        if (author == null) {
+            throw new IllegalArgumentException("Author not found for id " + authorId);
+        }
 
         book.setTitle(title);
         book.setGenre(genre);
         book.setAverageRating(averageRating);
         book.setAuthor(author);
-
         return book;
     }
-
-
 
     @Override
     public Book findById(Long id) {
@@ -83,5 +77,4 @@ public class InMemoryBookRepository implements BookRepository {
     public void deleteById(Long id) {
         DataHolder.books.removeIf(b -> b.getId().equals(id));
     }
-
 }

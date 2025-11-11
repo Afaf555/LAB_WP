@@ -9,6 +9,6 @@ import java.util.List;
 public interface BookReservationService {
     BookReservation placeReservation(String bookTitle, String readerName, String readerAddress, long numberOfCopies);
 
-   // List<BookReservation> showReservations(Book book);
+    // List<BookReservation> showReservations(Book book);
     List<BookReservation> getResByTitle(String bookTitle);
 }
