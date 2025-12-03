@@ -6,22 +6,24 @@
 </head>
 <body>
 
-<h2 th:text="${book == null} ? 'Add new book' : 'Edit book'"></h2>
+<h2 th:text="${book == null} ? 'Add New Book' : 'Edit Book'"></h2>
 
 <!-- ADD FORM -->
-<form th:action="@{/books/add}" method="post" th:if="${book == null}">
+<form th:if="${book == null}"
+      th:action="@{/books/add}"
+      method="post">
+
   <label>Title:</label>
-  <input type="text" name="title" ><br/>
+  <input type="text" name="title" required><br/>
 
   <label>Genre:</label>
-  <input type="text" name="genre" ><br/>
+  <input type="text" name="genre" required><br/>
 
   <label>Average Rating:</label>
-  <input type="number" name="averageRating" step="0.1" min="0" max="10" ><br/>
+  <input type="number" name="averageRating" step="0.1" min="0" max="10" required><br/>
 
   <label>Author:</label>
-  <select name="authorId" >
-    <option value="" disabled selected>-- choose author --</option>
+  <select name="authorId" required>
     <option th:each="a : ${authors}"
             th:value="${a.id}"
             th:text="${a.name + ' ' + a.surname}">
@@ -33,22 +35,27 @@
 </form>
 
 
-<form th:action="@{/books/edit/{bookId}(bookId=${book.id})}" method="post" th:if="${book != null}">
+<!-- EDIT FORM -->
+<form th:if="${book != null}"
+      th:action="@{/books/edit/{id}(id=${book.id})}"
+      method="post">
+
   <label>Title:</label>
-  <input type="text" name="title" th:value="${book.title}" ><br/>
+  <input type="text" name="title" th:value="${book.title}" required><br/>
 
   <label>Genre:</label>
-  <input type="text" name="genre" th:value="${book.genre}" ><br/>
+  <input type="text" name="genre" th:value="${book.genre}" required><br/>
 
   <label>Average Rating:</label>
-  <input type="number" name="averageRating" th:value="${book.averageRating}"
-         step="0.1" min="0" max="10" ><br/>
+  <input type="number" name="averageRating"
+         th:value="${book.averageRating}"
+         step="0.1" min="0" max="10" required><br/>
 
   <label>Author:</label>
   <select name="authorId" required>
     <option th:each="a : ${authors}"
             th:value="${a.id}"
-            th:selected="${book.author != null and a.id == book.author.id}"
+            th:selected="${a.id == book.author.id}"
             th:text="${a.name + ' ' + a.surname}">
     </option>
   </select>
@@ -58,7 +65,7 @@
 </form>
 
 <br/>
-<a href="/books">Back to list</a>
+<a href="/books">Back to Book List</a>
 
 </body>
 </html>

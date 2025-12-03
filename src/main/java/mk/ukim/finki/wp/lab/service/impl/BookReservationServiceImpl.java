@@ -1,6 +1,8 @@
 package mk.ukim.finki.wp.lab.service.impl;
 
+import mk.ukim.finki.wp.lab.model.Book;
 import mk.ukim.finki.wp.lab.model.BookReservation;
+import mk.ukim.finki.wp.lab.repository.BookRepository;
 import mk.ukim.finki.wp.lab.repository.BookReservationRepository;
 import mk.ukim.finki.wp.lab.service.BookReservationService;
 import org.springframework.stereotype.Service;
@@ -11,25 +13,38 @@ import java.util.List;
 public class BookReservationServiceImpl implements BookReservationService {
 
     private final BookReservationRepository bookReservationRepository;
+    private final BookRepository bookRepository;
 
-    public BookReservationServiceImpl(BookReservationRepository bookReservationRepository) {
+    public BookReservationServiceImpl(BookReservationRepository bookReservationRepository, BookRepository bookRepository) {
         this.bookReservationRepository = bookReservationRepository;
-
+        this.bookRepository = bookRepository;
     }
 
     @Override
-    public BookReservation placeReservation(String bookTitle, String readerName, String readerAddress, long numberOfCopies) {
-        BookReservation bookReservation = new BookReservation(bookTitle, readerName, readerAddress, numberOfCopies);
-        return bookReservationRepository.save(bookReservation);
-    }
+    public BookReservation placeReservation(String bookTitle,
+                                            String readerName,
+                                            String readerAddress,
+                                            Integer numCopies) {
 
-//    @Override
-//    public List<BookReservation> showReservations(Book book) {
-//        return bookReservationRepository.showReservations(book);
-//    }
+        Book book = bookRepository.findByTitle(bookTitle).orElse(null);
+
+        BookReservation reservation =
+                new BookReservation(readerName, readerAddress, numCopies, book);
+
+        return bookReservationRepository.save(reservation);
+    }
 
     @Override
-    public List<BookReservation> getResByTitle(String bookTitle) {
-        return bookReservationRepository.findByTitle(bookTitle);
+    public List<BookReservation> getResByTitle(String title) {
+        return bookReservationRepository.findAllByBook_Title(title);
     }
+
+    @Override
+    public List<BookReservation> findByBookTitle(String title) {
+        return bookReservationRepository.findAll()
+                .stream()
+                .filter(r -> r.getBook().getTitle().equals(title))
+                .toList();
+    }
+
 }

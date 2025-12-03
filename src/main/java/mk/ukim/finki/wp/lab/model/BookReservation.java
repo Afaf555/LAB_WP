@@ -1,37 +1,31 @@
 package mk.ukim.finki.wp.lab.model;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
 @Data
-
+@NoArgsConstructor
 public class BookReservation {
-    String bookTitle;
-    String readerName;
-    String readerAddress;
-    Long numberOfCopies;
 
-    public String getBookTitle() {
-        return bookTitle;
-    }
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    public BookReservation(String bookTitle, String readerName, String readerAddress, Long numberOfCopies) {
-        this.bookTitle = bookTitle;
+    private String readerName;
+
+    private String readerAddress;
+
+    private Integer numCopies;   // <-- ова ти недостасува!!
+
+    @ManyToOne
+    private Book book;
+
+    public BookReservation(String readerName, String readerAddress, Integer numCopies, Book book) {
         this.readerName = readerName;
         this.readerAddress = readerAddress;
-        this.numberOfCopies = numberOfCopies;
+        this.numCopies = numCopies;
+        this.book = book;
     }
-
-    public String getReaderName() {
-        return readerName;
-    }
-
-    public String getReaderAddress() {
-        return readerAddress;
-    }
-
-    public Long getNumberOfCopies() {
-        return numberOfCopies;
-    }
-
 }

@@ -1,16 +1,31 @@
 package mk.ukim.finki.wp.lab.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-//@AllArgsConstructor
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.ArrayList;
+@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Author {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String surname;
     private String country;
     private String biography;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Book> books = new ArrayList<>();
+
+    // Custom constructor WITHOUT books
     public Author(Long id, String name, String surname, String country, String biography) {
         this.id = id;
         this.name = name;
@@ -19,43 +34,4 @@ public class Author {
         this.biography = biography;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getBiography() {
-        return biography;
-    }
-
-    public void setBiography(String biography) {
-        this.biography = biography;
-    }
 }

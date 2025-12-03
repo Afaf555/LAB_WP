@@ -1,14 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Reservations</title>
 </head>
+
 <body>
+
+<h1 th:text="'Reservations for: ' + ${bookTitle}"></h1>
+
 <ul>
-    <li th:each="bookReservation: ${bookReservationList}">
-        <span th:text="'Title: ' + ${bookReservation.getBookTitle()} + ', Number copies: ' + ${bookReservation.getNumberOfCopies()} + ', Person: ' + ${bookReservation.getReaderName()}"></span>
+    <li th:each="r : ${bookReservationList}">
+        <span th:text="'Reader: ' + ${r.readerName}"></span>
+        <span th:text="' | Copies: ' + ${r.numCopies}"></span>
+        <span th:text="' | Address: ' + ${r.readerAddress}"></span>
     </li>
 </ul>
+
+<br>
+<a href="/books">
+    <button>Back to Books</button>
+</a>
+
 </body>
 </html>

@@ -17,35 +17,50 @@ public class BookController {
     private final BookService bookService;
     private final AuthorService authorService;
 
-    public BookController(BookService bookService, AuthorService authorService) {
+    public BookController(BookService bookService,
+                          AuthorService authorService) {
         this.bookService = bookService;
         this.authorService = authorService;
     }
 
     @GetMapping
-    public String getBooksPage(@RequestParam(required = false) String error,
+    public String getBooksPage(@RequestParam(required = false) Long authorId,
                                Model model) {
-        if (error != null && !error.isEmpty()) {
-            model.addAttribute("hasError", true);
-            model.addAttribute("error", error);
-        }
 
-        List<Book> books = bookService.listAll();
+        System.out.println("Authors size = " + authorService.findAll().size()); // ← TEST
+
+        List<Author> authors = authorService.findAll();
+        model.addAttribute("authors", authors);
+        model.addAttribute("selectedAuthorId", authorId);
+
+        List<Book> books;
+        if (authorId == null)
+            books = bookService.listAll();
+        else
+            books = bookService.findByAuthor(authorId);
+
         model.addAttribute("books", books);
+
         return "listBooks";
     }
 
-    // ADD FORM
+
+
     @GetMapping("/add")
     public String addBookForm(Model model) {
         model.addAttribute("authors", authorService.findAll());
+        // за да знае book-form дека е add, ќе нема "book" атрибут
         return "book-form";
     }
 
-    // EDIT FORM
     @GetMapping("/edit/{id}")
     public String editBookForm(@PathVariable Long id, Model model) {
-        model.addAttribute("book", bookService.findById(id));
+        Book book = bookService.findById(id);
+        if (book == null) {
+            // fallback ако не постои
+            return "redirect:/books";
+        }
+        model.addAttribute("book", book);
         model.addAttribute("authors", authorService.findAll());
         return "book-form";
     }
@@ -56,51 +71,24 @@ public class BookController {
                            @RequestParam Double averageRating,
                            @RequestParam Long authorId) {
 
-        Author author = authorService.findById(authorId);
-        if (author == null) {
-            return "redirect:/books?error=AuthorNotFound";
-        }
-
-        bookService.saveBook(title, genre, averageRating, author.getId());
+        bookService.saveBook(title, genre, averageRating, authorId);
         return "redirect:/books";
     }
 
-
-    @PostMapping("/edit/{bookId}")
-    public String editBook(@PathVariable Long bookId,
+    @PostMapping("/edit/{id}")
+    public String editBook(@PathVariable Long id,
                            @RequestParam String title,
                            @RequestParam String genre,
                            @RequestParam Double averageRating,
                            @RequestParam Long authorId) {
 
-        Author author = authorService.findById(authorId);
-        if (author == null) {
-            return "redirect:/books?error=AuthorNotFound";
-        }
-
-        bookService.editBook(bookId, title, genre, averageRating, author.getId());
+        bookService.editBook(id, title, genre, averageRating, authorId);
         return "redirect:/books";
     }
 
     @PostMapping("/delete/{id}")
-    public String deleteBook(@PathVariable Long id){
+    public String deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return "redirect:/books";
     }
-    @PostMapping("/books/book-form")
-    public String getAddBookPage(Model model){
-        model.addAttribute("authors", authorService.findAll());
-        return "book-form";
-    }
-    @PostMapping("/books/book-form/{id}")
-    public String getEditBookForm(@PathVariable Long id, Model model){
-        Book book=bookService.findById(id);
-        if(book!=null){
-            return "redirect:/books?error=BookNotFound";
-        }
-        model.addAttribute("book", book);
-        model.addAttribute("authors", authorService.findAll());
-        return "book-form";
-    }
-
 }
