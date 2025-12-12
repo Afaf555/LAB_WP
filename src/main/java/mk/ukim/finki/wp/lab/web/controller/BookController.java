@@ -24,25 +24,51 @@ public class BookController {
     }
 
     @GetMapping
-    public String getBooksPage(@RequestParam(required = false) Long authorId,
-                               Model model) {
-
-        System.out.println("Authors size = " + authorService.findAll().size()); // ← TEST
+    public String getBooksPage(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) Double minRating,
+            @RequestParam(required = false) Long authorId,
+            Model model)
+    {
+        System.out.println("Authors size = " + authorService.findAll().size());
 
         List<Author> authors = authorService.findAll();
         model.addAttribute("authors", authors);
         model.addAttribute("selectedAuthorId", authorId);
 
-        List<Book> books;
-        if (authorId == null)
-            books = bookService.listAll();
-        else
-            books = bookService.findByAuthor(authorId);
+        // 1. Прво земи ги сите книги
+        List<Book> books = bookService.listAll();
+
+        // 2. Филтрирање по title
+        if (searchText != null && !searchText.isEmpty()) {
+            books = books.stream()
+                    .filter(b -> b.getTitle().toLowerCase().contains(searchText.toLowerCase()))
+                    .toList();
+        }
+
+        // 3. Филтрирање по рейтинг
+        if (minRating != null) {
+            books = books.stream()
+                    .filter(b -> b.getAverageRating() >= minRating)
+                    .toList();
+        }
+
+        // 4. Филтрирање по authorId
+        if (authorId != null) {
+            books = books.stream()
+                    .filter(b -> b.getAuthor().getId().equals(authorId))
+                    .toList();
+        }
+
+        // 5. Ги ставаме параметрите назад во HTML
+        model.addAttribute("searchText", searchText);
+        model.addAttribute("minRating", minRating);
 
         model.addAttribute("books", books);
 
         return "listBooks";
     }
+
 
 
 
